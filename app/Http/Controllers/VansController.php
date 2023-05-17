@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreVanRequest;
 use App\Http\Resources\VansResource;
 use Illuminate\Http\Request;
 use App\Models\Van;
@@ -22,8 +23,19 @@ class VansController extends Controller {
    * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
-  public function store(Request $request) {
-    //
+  public function store(StoreVanRequest $request) {
+    $request->validated();
+
+    $van = Van::create([
+      'name' => $request->name,
+      'rate' => $request->rate,
+      'category' => $request->category,
+      'description' => $request->description,
+      'owner' => $request->owner,
+      'image' => $request->image,
+    ]);
+
+    return new VansResource($van);
   }
 
   /**
@@ -32,8 +44,8 @@ class VansController extends Controller {
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function show($id) {
-    //
+  public function show(Van $van) {
+    return new VansResource($van);
   }
 
   /**
@@ -43,8 +55,14 @@ class VansController extends Controller {
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id) {
-    //
+  public function update(StoreVanRequest $request, Van $van) {
+    $request->validated();
+
+    $van->update($request->only([
+      'name', 'rate', 'category', 'description', 'owner', 'image'
+    ]));
+
+    return new VansResource($van);
   }
 
   /**
@@ -53,7 +71,11 @@ class VansController extends Controller {
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy($id) {
-    //
+  public function destroy(Van $van) {
+    $van->delete();
+    return response()->json([
+      'success' => true,
+      'message' => 'Van has been deleted'
+    ]);
   }
 }
