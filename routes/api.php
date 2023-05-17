@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::apiResource('/vans', VansController::class);
+Route::get('/vans', [VansController::class, 'index']);
+Route::get('/vans/{van}', [VansController::class, 'show']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::post('/logout', [AuthController::class, 'logout']);
+  Route::apiResource('/vans', VansController::class)->only(['store', 'update', 'destroy']);
 });
